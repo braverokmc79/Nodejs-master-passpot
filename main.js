@@ -7,6 +7,8 @@ const topicRouter = require("./routes/topic");
 const authRouter = require("./routes/auth");
 const session = require('express-session')
 const FileStore = require('session-file-store')(session);
+// const crypto = require('crypto');
+// const db = require('./lib/db');
 
 
 const app = express()
@@ -14,21 +16,21 @@ const port = 3000
 const helmet = require('helmet')
 
 
-
 app.use(helmet())
+app.use(express.static('public'))
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(compression());
+
 app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
   store: new FileStore()
 }))
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
 
+// const passport = require('passport');
+// const LocalStrategy = require('passport-local');
 
-app.use(express.static('public'))
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(compression());
 
 
 app.get('*', (req, res, next) => {
@@ -41,8 +43,11 @@ app.get('*', (req, res, next) => {
 
 
 app.use("/", indexRouter);
-app.use('/topic', topicRouter);
 app.use('/auth', authRouter);
+app.use('/topic', topicRouter);
+
+
+
 
 app.use(function (req, res) {
   res.status(400).send("Sorry cant find that!");
