@@ -2,15 +2,9 @@ const express = require('express')
 const fs = require('fs');
 const bodyParser = require('body-parser')
 const compression = require('compression')
-const indexRouter = require("./routes/index");
-const topicRouter = require("./routes/topic");
-const authRouter = require("./routes/auth");
 const session = require('express-session')
-const FileStore = require('session-file-store')(session);
-// const crypto = require('crypto');
-// const db = require('./lib/db');
-
-
+const MySQLStore = require('express-mysql-session')(session);
+const flash = require('connect-flash');
 const app = express()
 const port = 3000
 const helmet = require('helmet')
@@ -21,31 +15,39 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(compression());
 
+
+// session DB 저장 방식 - session 테이블이 자동 생성되고  세션이 passport의해 저장 된다.
 app.use(session({
-  secret: 'keyboard cat',
+  secret: '12312dajfj23rj2po4$#%@#',
   resave: false,
   saveUninitialized: true,
-  store: new FileStore()
-}))
+  store: new MySQLStore({
+    host: 'localhost',
+    port: 3306,
+    user: 'opentutorials',
+    password: '1111',
+    database: 'opentutorials'
+  })
+}));
 
-// const passport = require('passport');
-// const LocalStrategy = require('passport-local');
-
-
+app.use(flash());
+const passport = require("./lib/passport")(app);
 
 app.get('*', (req, res, next) => {
   fs.readdir('./data', function (error, filelist) {
     req.list = filelist;
     next();
   });
-
 });
 
+
+const indexRouter = require("./routes/index");
+const authRouter = require("./routes/auth")(passport);
+const topicRouter = require("./routes/topic");
 
 app.use("/", indexRouter);
 app.use('/auth', authRouter);
 app.use('/topic', topicRouter);
-
 
 
 
