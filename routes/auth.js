@@ -40,11 +40,6 @@ module.exports = function (passport) {
   }));
 
 
-
-
-
-
-
   //로그 아웃 처리
   router.get('/logout', function (req, res, next) {
     req.logout(function (err) {
@@ -55,9 +50,6 @@ module.exports = function (passport) {
       })
     });
   });
-
-
-
 
 
   //회원가입페이지
