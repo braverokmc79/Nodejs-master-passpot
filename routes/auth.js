@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const template = require('../lib/template.js');
 const auth = require("../lib/auth.js");
-
+const db = require("../lib/db");
+global.crypto = require('crypto')
 
 module.exports = function (passport) {
 
