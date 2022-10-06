@@ -20,7 +20,7 @@ module.exports = function (passport) {
     const html = template.HTML(title, list, `
             <div style="color:red">${feedback}</div>
             <form action="/auth/login_process" method="post">
-              <p><input type="text" name="username" placeholder="username"></p>  
+              <p><input type="email" name="email" placeholder="email"></p>  
               <p><input type="password" name="password" placeholder="password"></p>                                 
               <p>
                 <input type="submit" value="login">
@@ -69,17 +69,21 @@ module.exports = function (passport) {
            <h1>Sign up</h1>
       <form action="/auth/signup_process" method="post">
           <section>
-              <label for="username">username</label>
-              <input id="username" name="username" type="text" autocomplete="username" required>
+              <label for="username">이름</label>
+              <input id="username" name="username" type="text" placeholder="이름" required>
           </section>
          <section>
-              <label for="email">email</label>
-              <input id="email" name="email" type="email" autocomplete="email" required>
+              <label for="email">이메일</label>
+              <input id="email" name="email" type="email" placeholder="이메일" required>
           </section>          
           <section>
-              <label for="password">Password</label>
-              <input id="password" name="password" type="password" autocomplete="new-password" required>
+              <label for="password">비밀번호</label>
+              <input id="password" name="password" type="password" autocomplete="new-password" placeholder="비밀번호" required>
           </section>
+          <section>
+              <label for="password">비밀번호확인</label>
+              <input id="password" name="pw2" type="password" autocomplete="new-password" placeholder="비밀번호확인" required>
+          </section>          
           <button type="submit">Sign up</button>
       </form>
           `, '', auth.statusUI(req, res));
@@ -90,6 +94,10 @@ module.exports = function (passport) {
   //회원가입처리
   router.post('/signup_process', function (req, res, next) {
 
+    if (req.body.password !== req.body.pw2) {
+      req.flash("error", "비밀번호가 일치 하지 않습니다.");
+      return res.redirect("/auth/signup");
+    }
     crypto.randomBytes(16, (error, buf) => {
       const salt = buf.toString("base64");
 
